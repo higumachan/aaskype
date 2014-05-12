@@ -4,7 +4,7 @@ AAでSkypeみたいなビデオチャットが作りたかったモノの最初�
 
 Opencvが入ってる人で僕と同じでMacでbrewで入れた人なら
 ```
- bash build.sh
+ bash build.sh main.cc
 ```
 を実行することでaaskypeというファイルができるので、それを
 ```

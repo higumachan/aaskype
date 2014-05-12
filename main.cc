@@ -60,17 +60,28 @@ void genCharTable(const char*file){
 	}
 	fclose(fp);
 	double min=0xff;
-	for(int i=0;i<infoLength;i++){double av=(info[i][0]+info[i][1])/2.0;if(av<min)min=av;}
-	for(int i=0;i<infoLength;i++)for(int j=0;j<2;j++)info[i][j]=0xff*(info[i][j]-min)/(0xff-min);
-	for(int i=0;i<256;i++)for(int j=0;j<256;j++){
+	for(int i = 0; i < infoLength; i++){
+		double av=(info[i][0] + info[i][1]) / 2.0;
+		if(av < min) min = av;
+	}
+	for(int i = 0;i < infoLength; i++){
+		for(int j = 0;j < 2; j++){
+			info[i][j] = 0xff * (info[i][j] - min) / (0xff - min);
+		}
+	}
+	for(int i = 0; i < 256; i++){
+		for(int j = 0;j < 256;j++){
 		double costMin=-1;
 		int indexMin=0;
 		for(int k=0;k<infoLength;k++){
-			double difUp=i-info[k][0],difDown=j-info[k][1],difAv=difUp+difDown;
-			double cost=difUp*difUp+difDown*difDown+difAv*difAv*difAv*difAv/1024;
-			if(costMin<0||cost<costMin){costMin=cost;indexMin=k;}
+			double difUp = i - info[k][0], difDown = j - info[k][1], difAv = difUp + difDown;
+			double cost = difUp * difUp + difDown * difDown + difAv * difAv * difAv * difAv / 1024;
+			if(costMin < 0 || cost < costMin){
+				costMin=cost;
+				indexMin=k;
+			}
 		}
-		charTable[i][j]=infoChar[indexMin];
+		charTable[i][j] = infoChar[indexMin];
 	}
 }
 

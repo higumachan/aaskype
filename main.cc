@@ -1,5 +1,7 @@
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
 #include <curses.h>
+#include <unistd.h>
 #include <sys/ioctl.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
@@ -20,11 +22,11 @@ void cursesInit()
 {
 	if(!initscr()) {
 		printf("Error initializing screen.\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if(!has_colors()) {
 		printf("This terminal does not support colours.\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	leaveok(stdscr, FALSE);
 	use_default_colors();
@@ -41,7 +43,7 @@ void genCharTable(const char*file){
 	FILE*fp=fopen(file,"r");
 	if(!fp){
 		fprintf(stderr,"charInfoFile :%s not found\n",file);
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 	char infoChar[256];
 	double info[256][2];
@@ -71,23 +73,24 @@ void genCharTable(const char*file){
 	}
 	for(int i = 0; i < 256; i++){
 		for(int j = 0;j < 256;j++){
-		double costMin=-1;
-		int indexMin=0;
-		for(int k=0;k<infoLength;k++){
-			double difUp = i - info[k][0], difDown = j - info[k][1], difAv = difUp + difDown;
-			double cost = difUp * difUp + difDown * difDown + difAv * difAv * difAv * difAv / 1024;
-			if(costMin < 0 || cost < costMin){
-				costMin=cost;
-				indexMin=k;
+			double costMin=-1;
+			int indexMin=0;
+			for(int k=0;k<infoLength;k++){
+				double difUp = i - info[k][0], difDown = j - info[k][1], difAv = difUp + difDown;
+				double cost = difUp * difUp + difDown * difDown + difAv * difAv * difAv * difAv / 1024;
+				if(costMin < 0 || cost < costMin){
+					costMin=cost;
+					indexMin=k;
+				}
 			}
+			charTable[i][j] = infoChar[indexMin];
 		}
-		charTable[i][j] = infoChar[indexMin];
 	}
 }
 
 
 
-void render(Mat img)
+void render(const Mat& img)
 {
 	int width = img.cols;
 	int height = img.rows;
@@ -101,18 +104,18 @@ void render(Mat img)
 	/*
 	// 横の方が大きい間
 	while (cfw / cfh * 2 > aspect){
-		cfw--;
+	cfw--;
 	}
 	// 縦の方が大きい間
 	while (cfw / cfh * 2 < aspect){
-		cfh--;
+	cfh--;
 	}
 	*/
 	Mat resized_img;
 	width = width / cfw * cfw;
 	height = height / cfh * cfh;
 	resize(gray, resized_img, Size(width, height));
-	
+
 	int w_offset = width / cfw;
 	int h_offset = height / cfh;
 	for (int y = 0; y < cfh; y++){

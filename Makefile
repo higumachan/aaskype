@@ -1,8 +1,4 @@
-INCLUDE_DIRS = /usr/local/include/opencv2 /usr/local/include/opencv
-LINK_DIRS = /usr/local/lib
-LINK_LIB = opencv_highgui opencv_core opencv_calib3d opencv_imgproc opencv_features2d curses
 CORE = aaskype
-CXX_FLAGS = -O2 $(addprefix -I, $(INCLUDE_DIRS)) $(addprefix -L, $(LINK_DIRS)) $(addprefix -l, $(LINK_LIB))
 
 .PHONEY: all clean initialize
 
@@ -14,6 +10,18 @@ clean:
 initialize:
 	sudo brew install opencv
 
-$(CORE): main.cc
-	$(CXX) $< -o $@ $(CXX_FLAGS)
 
+CXXFLAGS = \
+		   -I/usr/local/include
+
+LDFLAGS = \
+		  -L/usr/local/lib \
+		  -lopencv_core \
+		  -lopencv_highgui \
+		  -lopencv_features2d \
+		  -lopencv_imgproc \
+		  -lopencv_nonfree \
+		 -lcurses
+
+$(CORE): main.cc
+	$(CXX) $< -o $@ $(CXXFLAGS) $(LDFLAGS)

@@ -3,8 +3,8 @@
 #include <curses.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
+
 
 using namespace std;
 using namespace cv;
@@ -128,29 +128,22 @@ void render(const Mat& img)
 			//printf("(%d %d) (%d %d)\n", mx, uy, mx, dy);
 			unsigned char a = resized_img.at<unsigned char>(uy, mx);
 			unsigned char b = resized_img.at<unsigned char>(dy, mx);
-			//putc(charTable[a][b], stdout);
+			putc(charTable[a][b], stdout);
 			//attron(COLOR_PAIR(5| A_NORMAL));
-			addch(charTable[a][b]);
+			//addch(charTable[a][b]);
 		}
 		//puts("");
 	}
 	//imshow("test", resized_img);
 }
 
-int main(void)
+int main(int argc, char* argv[])
 {
-	VideoCapture cap(0);
-	Mat frame;
+	Mat frame = imread(argv[1]);
 
 	cursesInit();
 	genCharTable("charinfo/Monaco.charinfo");
 
 	resize();
-	while (true){
-		cap >> frame;
-		render(frame);
-		refresh();
-		resize();
-		waitKey(17);
-	}
+    render(frame);
 }
